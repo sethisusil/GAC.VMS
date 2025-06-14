@@ -108,8 +108,9 @@ GGAC.WMS.Api.sln/
     ├── GAC.WMS.Worker.Tests/             --> Test cases for background Worker for legacy XML ingestion(Repository)
 ```
 
+
 <p align="center">
-  <img src="./docs/architecture-diagram.png" alt="Architecture Diagram" width="800"/>
+ <img width="606" src="https://github.com/user-attachments/assets/ce408d84-4fe0-4168-87a4-4e87306335cd"  alt="Architecture diagram" width="800" />
 </p>
 
 ---
@@ -177,8 +178,10 @@ GGAC.WMS.Api.sln/
     - You can test directly from swagger for all end points (GET, POST, PUT,DELETE)
     - Make sure not to pass id filed with value while creation
 <p align="center">
-  <img src="./docs/Swagger.png" alt="Swagger UI" width="800"/>
+  <img width="949" src="https://github.com/user-attachments/assets/d76730f3-00dc-4dbc-ba89-cc08c035b8f2"  alt="Swagger UI" width="800" />
 </p>
+
+
 
 #### Run `GAC.WMS.Worker` project through Visual Studio 2022
 - Right click on `GAC.WMS.Worker` and select `Debug` --> `Start New Instance`
@@ -207,8 +210,9 @@ cd GAC.WMS.Api
 dotnet test
 ```
 <p align="center">
-  <img src="./docs/TestCases.png" alt="Test Cases" width="800"/>
+  <img width="248" alt="TestCases" src="https://github.com/user-attachments/assets/afe3c0ff-696e-4770-a003-9579eb2ab235" width="800" />
 </p>
+
 
 ---
 ### Run with Docker Compose
@@ -251,6 +255,7 @@ docker-compose up --build
 - Datase is used using EF core code first approach
 - Migration should be automatically applied to target DB on application load
 <p align="center">
-  <img src="./docs/DatabaseSchema.png" alt="databse  Schema" width="800"/>
+  <img width="618" alt="DatabaseSchema" src="https://github.com/user-attachments/assets/3b6a7494-4e6a-4955-929b-60df657826f1"  width="800" />
+
 </p>
 
