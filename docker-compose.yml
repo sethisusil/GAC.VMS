@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    restart: always
+    environment:
+      SA_PASSWORD: "Gacwmsdatabase@123!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "sqlcmd -S localhost -U sa -P Gacwmsdatabase@123! -Q 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: GAC.WMS.Api/Dockerfile
+    container_name: gac_api
+    restart: always
+    ports:
+      - "5000:8080"
+    depends_on:
+      - sqlserver
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=GACWMS;User Id=sa;Password=Gacwmsdatabase@123!;TrustServerCertificate=true;"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
+  legacyworker:
+    build:
+      context: .
+      dockerfile: GAC.WMS.Worker/Dockerfile
+    container_name: gac_lagacy_worker
+    ports:
+      - "5001:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      - GACWMSApi__BaseUrl=http://gac_api:8080/
+      - GACWMSApi__UploadCustomerUrl=api/Customer/upload
+      - GACWMSApi__UploadProductUrl=api/Product/upload
+      - GACWMSApi__UploadPurchaseOrderUrl=api/PurchaseOrder/upload
+      - GACWMSApi__UploadSalesOrderUrl=api/SalesOrder/upload
+      - XmlFileConfig__BasePath=/app/data/xmfiles
+      - XmlFileConfig__CustomerFileName=Customers.xml
+      - XmlFileConfig__ProductFileName=Products.xml
+      - XmlFileConfig__PurchaseOrderFileName=PurchaseOrders.xml
+      - XmlFileConfig__SalesOrderFileName=SalesOrders.xml
+      - XmlFileConfig__ProcessedPath=/app/data/xmfilesprocessedfiles
+    volumes:
+      - C:/GACWMS/XmlFiles:/app/data/xmfiles
+      - C:/GACWMS/ProcessedFiles:/app/data/xmfilesprocessedfiles
+    command: >
+      sh -c "mkdir -p /app/data/xmfiles /app/data/xmfilesprocessedfiles &&
+             dotnet GAC.WMS.Worker.dll"
+    networks:
+      - backend
+
+networks:
+  backend:

@@ -1,0 +1,18 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/EPPOSSystem/.vs/EPPOSSystem
+/EPPOSSystem/bin/Debug/net6.0
+# Ignore all .exe files
+*.exe
+
+# Ignore all .dll files
+*.dll
+
+# Ignore all .pdb files
+*.pdb
+**/bin/
+**/obj/
+**/.vs/
+/EPPOSSystem/wwwroot/EposSystemFiles
