@@ -1,10 +1,7 @@
-version: '3.8'
-
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver
-    restart: always
     environment:
       SA_PASSWORD: "Gacwmsdatabase@123!"
       ACCEPT_EULA: "Y"
@@ -23,7 +20,6 @@ services:
       context: .
       dockerfile: GAC.WMS.Api/Dockerfile
     container_name: gac_api
-    restart: always
     ports:
       - "5000:8080"
     depends_on:
@@ -32,11 +28,6 @@ services:
       ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=GACWMS;User Id=sa;Password=Gacwmsdatabase@123!;TrustServerCertificate=true;"
     networks:
       - backend
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
       
   legacyworker:
     build:
@@ -46,8 +37,7 @@ services:
     ports:
       - "5001:8080"
     depends_on:
-      api:
-        condition: service_healthy
+      - api
     environment:
       - GACWMSApi__BaseUrl=http://gac_api:8080/
       - GACWMSApi__UploadCustomerUrl=api/Customer/upload

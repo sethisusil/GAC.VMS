@@ -32,6 +32,12 @@ namespace GAC.WMS.Worker.BackgroundWorker
             {
                 try
                 {
+                    var now = DateTime.UtcNow;
+                    var next = _cron.GetNextOccurrence(now);
+                    var delay = next?.Subtract(now) ?? TimeSpan.FromMinutes(5);
+                    _logger.LogInformation($"{nameof(XmlPollingHostedService)}.{nameof(ExecuteAsync)}: Next execution scheduled at {next?.ToString("o") ?? "unknown"} (in {delay.TotalSeconds} seconds).");
+                    await Task.Delay(delay, stoppingToken);
+
                     _logger.LogInformation($"{nameof(XmlPollingHostedService)}.{nameof(ExecuteAsync)}: XmlPollingHostedService is processing XML files.");
                     using var scope = _serviceProvider.CreateScope();
                     var processor = scope.ServiceProvider.GetRequiredService<IXmlFileProcessor>();
@@ -43,12 +49,7 @@ namespace GAC.WMS.Worker.BackgroundWorker
                     _logger.LogError(ex, "Error occurred while processing XML files.");
                 }
 
-                _logger.LogInformation($"{nameof(XmlPollingHostedService)}.{nameof(ExecuteAsync)}: XmlPollingHostedService completed processing.");
-                var now = DateTime.UtcNow;
-                var next = _cron.GetNextOccurrence(now);
-                var delay = next?.Subtract(now) ?? TimeSpan.FromMinutes(5);
-                _logger.LogInformation($"{nameof(XmlPollingHostedService)}.{nameof(ExecuteAsync)}: Next execution scheduled at {next?.ToString("o") ?? "unknown"} (in {delay.TotalSeconds} seconds).");
-                await Task.Delay(delay, stoppingToken);
+                _logger.LogInformation($"{nameof(XmlPollingHostedService)}.{nameof(ExecuteAsync)}: XmlPollingHostedService completed processing.");              
             }
         }
     }
